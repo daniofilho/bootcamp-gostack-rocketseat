@@ -19,6 +19,11 @@ const upload = multer(multerConfig);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
+// rota para testar erros
+routes.get('/error', (req, res) => {
+  res.end('Error!');
+});
+
 // Cria um middleware que irá verificar o token antes de executar qualquer rota depois dessa linha
 routes.use(authMiddleware);
 
