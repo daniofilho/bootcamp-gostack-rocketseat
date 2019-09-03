@@ -56,14 +56,14 @@ export const List = styled.ul`
   margin-top: 30px;
 
   li {
-    padding: 15px; 0;
+    padding: 15px 0;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 
     & + li {
-      border-top: 1px solid #EEE;
+      border-top: 1px solid #eee;
     }
 
     a {
@@ -71,4 +71,15 @@ export const List = styled.ul`
       text-decoration: none;
     }
   }
+`;
+
+export const InputText = styled.input.attrs(props => ({
+  type: 'text',
+  placeholder: `${props.placeholder}ssas`,
+}))`
+  ${props =>
+    props.error &&
+    css`
+      border-color: red !important;
+    `}
 `;

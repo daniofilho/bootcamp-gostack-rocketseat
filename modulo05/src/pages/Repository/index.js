@@ -3,10 +3,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, IssueFilter, Navigation } from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -21,23 +22,19 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    activeIssueFilter: 'open',
+    activePage: 1,
+    issueFilter: [
+      { type: 'all', label: 'Todas' },
+      { type: 'open', label: 'Abertas' },
+      { type: 'closed', label: 'Fechadas' },
+    ],
   };
 
   async componentDidMount() {
-    const { match } = this.props;
+    const { activeIssueFilter } = this.state;
 
-    const repoName = decodeURIComponent(match.params.repository);
-
-    // Faz as requisições ao mesmo tempo, mas só continua a execução após a finalização de ambas
-    const [repository, issues] = await Promise.all([
-      api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues`, {
-        params: {
-          state: 'open',
-          per_page: 5,
-        },
-      }),
-    ]);
+    const [repository, issues] = await this.getRepoInfo(activeIssueFilter);
 
     this.setState({
       loading: false,
@@ -46,8 +43,58 @@ export default class Repository extends Component {
     });
   }
 
+  async getRepoInfo(activeIssueFilter, page = 0) {
+    const { match } = this.props;
+    const { activePage } = this.state;
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const pageNum = page !== 0 ? page : activePage;
+
+    const r = await Promise.all([
+      api.get(`/repos/${repoName}`),
+      api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: activeIssueFilter,
+          per_page: 5,
+          page: pageNum,
+        },
+      }),
+    ]);
+    return r;
+  }
+
+  async handleFilter(filterType) {
+    this.setState({ loading: true });
+
+    const [repository, issues] = await this.getRepoInfo(filterType);
+
+    this.setState({
+      loading: false,
+      repository: repository.data,
+      issues: issues.data,
+      activeIssueFilter: filterType,
+    });
+  }
+
+  async goToPage(pageNum) {
+    const { activeIssueFilter } = this.state;
+    this.setState({ loading: true });
+
+    const [repository, issues] = await this.getRepoInfo(
+      activeIssueFilter,
+      pageNum
+    );
+
+    this.setState({
+      loading: false,
+      repository: repository.data,
+      issues: issues.data,
+      activePage: pageNum,
+    });
+  }
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, issueFilter, activePage } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -61,6 +108,24 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
+
+        <IssueFilter>
+          <li>Filtrar:</li>
+          {issueFilter.map(filter => {
+            return (
+              <li key={filter.type}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    this.handleFilter(filter.type);
+                  }}
+                >
+                  {filter.label}
+                </button>
+              </li>
+            );
+          })}
+        </IssueFilter>
 
         <IssueList>
           {issues.map(issue => (
@@ -78,6 +143,20 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+
+        <Navigation>
+          <button
+            type="button"
+            disabled={activePage < 2}
+            onClick={() => this.goToPage(activePage - 1)}
+          >
+            <FaArrowLeft />
+          </button>
+          <span>Página {activePage}</span>
+          <button type="button" onClick={() => this.goToPage(activePage + 1)}>
+            <FaArrowRight />
+          </button>
+        </Navigation>
       </Container>
     );
   }
