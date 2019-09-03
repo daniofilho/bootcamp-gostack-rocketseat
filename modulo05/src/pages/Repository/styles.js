@@ -100,3 +100,35 @@ export const IssueList = styled.ul`
     }
   }
 `;
+
+export const IssueFilter = styled.ul`
+  display: flex;
+  list-style: none;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  button {
+    display: block;
+    background: #eee;
+    color: #555;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border: 0px;
+  }
+`;
+
+export const Navigation = styled.ul`
+  display: flex;
+  list-style: none;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  button {
+    display: block;
+    background: #eee;
+    color: #555;
+    padding: 5px 10px;
+    margin: 0 20px;
+    border: 0px;
+  }
+`;
