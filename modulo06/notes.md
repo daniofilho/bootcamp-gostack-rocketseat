@@ -106,3 +106,25 @@ public class MainActivity extends ReactActivity {
 ```
 
 Ao final, rode `yarn react-native run-android` para recompilar.
+
+**Problema ENOSPC**
+
+https://stackoverflow.com/questions/22475849/node-js-what-is-enospc-error-and-how-to-solve
+
+**Ícones**
+
+`yarn add react-native-vector-icons`
+
+Em seguida é necessário linka-la ao projeto
+
+`yarn link react-native-vector-icons`
+
+Ao final, rode `yarn react-native run-android` para recompilar.
+
+#### "Local Storage"
+
+Por padrão o React Native não possui local storage, então usa-seoutra lib:
+
+`yarn add @react-native-community/async-storage`
+
+Ao final, rode `yarn react-native run-android` para recompilar. ( no iOS é `pod install`)
