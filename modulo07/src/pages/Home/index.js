@@ -1,11 +1,14 @@
 /* eslint-disable react/state-in-constructor */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { formatPrice } from '../../util/format';
 import api from '../../services/api';
 
 import { ProductList } from './styles';
+
+import * as CartActions from '../../store/modules/cart/actions';
 
 class Home extends Component {
   state = {
@@ -24,18 +27,16 @@ class Home extends Component {
   }
 
   // Action que vai disparar para o reducer avisando que tem coisa nova
-  handleAddProduct = product => {
-    const { dispatch } = this.props;
+  handleAddProduct = id => {
+    const { addToCartRequest } = this.props;
 
-    // TODO reducer vai receber esse dispatch
-    dispatch({
-      type: 'ADD_TO_CART',
-      product,
-    });
+    // Todo reducer vai receber esse dispatch
+    addToCartRequest(id);
   };
 
   render() {
     const { products } = this.state;
+    const { amount } = this.props;
     return (
       <ProductList>
         {products.map(product => (
@@ -46,10 +47,11 @@ class Home extends Component {
 
             <button
               type="button"
-              onClick={() => this.handleAddProduct(product)}
+              onClick={() => this.handleAddProduct(product.id)}
             >
               <div>
                 <MdAddShoppingCart size={16} color="#FFF" />
+                {amount[product.id] || 0}
               </div>
 
               <span>ADICIONAR AO CARRINHO</span>
@@ -61,4 +63,19 @@ class Home extends Component {
   }
 }
 
-export default connect()(Home);
+// Convertendo states em props para o componente
+const mapStateToProps = state => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+    return amount;
+  }, {}),
+});
+
+// Convertendo os dispatches em props pro componente
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home);

@@ -25,3 +25,23 @@ Crie um arquivo chamado `server.json` e cole um JSON válido lá dentro.
 Para rodar o "server":
 
 `json-server server.json -p 3333 -w`
+
+#### Reactotron com Redux
+
+`yarn add reactotron-react-js reactotron-redux`
+
+#### Immer
+
+https://github.com/immerjs/immer
+
+Manipulação de estados imutáveis.
+
+#### Redux Saga
+
+Middleware do Redux para interceptar dispatches
+
+`yarn add redux-saga`
+
+**Plugin do Reactotron para ter mais informações sobre redux saga**
+
+`yarn add reactotron-redux-saga`
