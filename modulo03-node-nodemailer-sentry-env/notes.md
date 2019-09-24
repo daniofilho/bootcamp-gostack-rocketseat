@@ -72,3 +72,15 @@ MAIL_PASS=fae8bad95408c8
 SENTRY_DSN=https://cfd2ab3234b34e57968baa2241438054@sentry.io/1545597
 
 ```
+
+## Docker - Postgres
+
+`docker run --name gobarber -e POSTGRES_PASSWORD=docker -p 5433:5432 -d postgres`
+
+## Docker - MnogoDB
+
+`docker run --name mongobarber -p 27017:27017 -d -t mongo`
+
+## Docker - Redis
+
+`docker run --name redisbarber -p 6379:6379 -d -t redis:alpine`
