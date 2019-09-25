@@ -1,0 +1,84 @@
+import React from "react";
+import {
+  render,
+  fireEvent,
+  cleanup,
+  getAllByTestId
+} from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
+
+import TechList from "~/components/TechList";
+
+describe("TechList component", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  /*
+  it("should be able to add new tech", () => {
+    // getByTestId => <ul data-testid="tech-list">
+
+    const { getByText, getByTestId, debug } = render(<TechList />);
+
+    // Procura pelo elemento que estiver escrito "adicionar" para
+    // disparar um evento de click
+    fireEvent.click(getByText("Adicionar"));
+
+    // Mostra o HTML como está
+    debug();
+
+    // esperando que o elemento que possui o data-testid sendo 'tech-list'
+    // tenha um elemento que tenha escrito 'Node.js'
+    expect(
+      getByTestId("tech-list").contains(getByText("Node.js"))
+    ).toBeTruthy();
+  });*/
+
+  it("should be able to add new tech", () => {
+    const { getByText, getByTestId, getByLabelText } = render(<TechList />);
+
+    /*
+      <label htmlFor="tech">Tech</label>
+      <input id="tech" />
+
+      esperando que exista o html acima
+
+      Escreve no input o texto
+    */
+    fireEvent.change(getByLabelText("Tech"), {
+      target: {
+        value: "Node.js" // e.target.value
+      }
+    });
+
+    //Submita o form
+    fireEvent.submit(getByTestId("tech-form"));
+
+    // esperando que o elemento que possui o data-testid sendo 'tech-list'
+    // tenha um elemento que tenha escrito 'Node.js'
+    expect(getByTestId("tech-list")).toContainElement(getByText("Node.js"));
+    expect(getByLabelText("Tech")).toHaveValue("");
+  });
+
+  it("should store techs in storage", () => {
+    const InputtedValue = "Node.js";
+    let { getByTestId, getByLabelText, getByText } = render(<TechList />);
+
+    fireEvent.change(getByLabelText("Tech"), {
+      target: {
+        value: InputtedValue
+      }
+    });
+
+    fireEvent.submit(getByTestId("tech-form"));
+
+    cleanup(); // lista a lista para verificar se o item adicionado é renderizado de novo
+
+    ({ getByTestId, getByLabelText, getByText } = render(<TechList />));
+
+    expect(getByTestId("tech-list")).toContainElement(getByText(InputtedValue));
+
+    // Testa se a chamada a api de localStorage foi feita corretamente
+    expect(getByTestId("tech-list")).toContainElement(getByText(InputtedValue));
+  });
+});
